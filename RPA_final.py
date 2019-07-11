@@ -8,9 +8,6 @@ app = Flask(__name__)
 
 
 server = "imap.gmail.com"
-user = ""
-password = ""
-date = ''
 outputdir = '/home/thejas/RPA'
 
 
@@ -59,7 +56,7 @@ def download_from(server, user, password, date):
 def append():
     
 
-    df = pd.read_excel("LP Punjab Offer List.xlsx")
+    df = pd.read_excel("list.xlsx")
     of = pd.read_excel("offers.xlsx")
 
     df['Offers'] = ""
@@ -80,6 +77,13 @@ def append():
     
     df.to_excel("output.xlsx")
 
+def map_server(server):
+    if(server == 'Gmail'):
+        server = 'imap.gmail.com'
+    if(server == 'Outlook'):
+        server = 'imap.outlook.com'
+        
+    return server
 
 @app.route('/')
 def index():
@@ -88,10 +92,20 @@ def index():
 @app.route('/', methods = ['POST'])
 def start():
     server = 'imap.gmail.com'
-    date = '4-Jul-2019'
+    #date = '4-Jul-2019'
+    
+    #form inputs
     user = request.form['user']
     password = request.form['password']
+    #date input
+    day = request.form['day']
+    month = request.form['month']
+    year = request.form['year']
+    server = request.form['server']
+    server = map_server(server)
+    date = day+month+year
     download_from(server, user, password, date)
+    
     return send_file("output.xlsx")
 
 if __name__ == "__main__":
